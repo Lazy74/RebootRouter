@@ -14,17 +14,23 @@ class TcpClientSample
         //Console.Write(MyPing("www.det.act.gov.au"));
         while (true)
         {
+            Console.Write("ping google.com\n");
             if (MyPing("google.com")==0)
             {
+                Console.Write("ping ya.ru\n");
                 if (MyPing("ya.ru") == 0)
                 {
+                    Console.Write("ping mail.ru\n");
                     if (MyPing("mail.ru") == 0)
                     {
+                        Console.Write("Reboot\n");
                         Reboot();
+                        Thread.Sleep(60000);     // 3 мин = 180000     1 мин = 60000
                     }
                 }
             }
-            Console.Write("Ok\n");
+            Console.Write("ok\n");
+            Thread.Sleep(1500);
         }
         //Console.ReadKey(true);
     }
