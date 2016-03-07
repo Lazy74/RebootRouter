@@ -8,8 +8,7 @@ class TcpClientSample
 {
     public static void Main()
     {
-        Console.Write("String123");
-        Thread.Sleep(500000);
+        Reboot();
     }
 
     static void Reboot()
@@ -28,17 +27,17 @@ class TcpClientSample
         }
         Thread.Sleep(1000);
 
-        NetworkStream ns = server.GetStream();
-        int recv = ns.Read(data, 0, data.Length);
-        stringData = Encoding.ASCII.GetString(data, 0, recv);
-        Console.WriteLine(stringData);
+        //NetworkStream ns = server.GetStream();
+        //int recv = ns.Read(data, 0, data.Length);
+        //stringData = Encoding.ASCII.GetString(data, 0, recv);
+        //Console.WriteLine(stringData);
         SendCmd(server, "admin");
         SendCmd(server, "pass");
         SendCmd(server, "reboot");
-        Console.WriteLine("Disconnecting from server...");
-        Thread.Sleep(1000);
+        //Console.WriteLine("Disconnecting from server...");
+        //Thread.Sleep(1000);
 
-        ns.Close();
+        //ns.Close();
         server.Close();
     }
 
