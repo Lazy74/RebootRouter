@@ -10,9 +10,23 @@ class TcpClientSample
 {
     public static void Main()
     {
-        Console.Write(MyPing("ya.ru"));
-        //Reboot();
-        Console.ReadKey(true);
+        int n = 0;
+        //Console.Write(MyPing("www.det.act.gov.au"));
+        while (true)
+        {
+            if (MyPing("google.com")==0)
+            {
+                if (MyPing("ya.ru") == 0)
+                {
+                    if (MyPing("mail.ru") == 0)
+                    {
+                        Reboot();
+                    }
+                }
+            }
+            Console.Write("Ok\n");
+        }
+        //Console.ReadKey(true);
     }
 
     static int MyPing(string addr)
@@ -21,7 +35,7 @@ class TcpClientSample
         PingReply pingReply = null;
         try
         {
-            pingReply = ping.Send(addr, 10);
+            pingReply = ping.Send(addr, 2000);
         }
         catch (Exception)
         {
