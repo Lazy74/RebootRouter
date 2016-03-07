@@ -10,26 +10,25 @@ class TcpClientSample
 {
     public static void Main()
     {
-        int n = 0;
         //Console.Write(MyPing("www.det.act.gov.au"));
         while (true)
         {
-            Console.Write("ping google.com\n");
+            //Console.Write("ping google.com\n");
             if (MyPing("google.com")==0)
             {
-                Console.Write("ping ya.ru\n");
+                //Console.Write("ping ya.ru\n");
                 if (MyPing("ya.ru") == 0)
                 {
-                    Console.Write("ping mail.ru\n");
+                    //Console.Write("ping mail.ru\n");
                     if (MyPing("mail.ru") == 0)
                     {
-                        Console.Write("Reboot\n");
+                        //Console.Write("Reboot\n");
                         Reboot();
-                        Thread.Sleep(60000);     // 3 мин = 180000     1 мин = 60000
+                        Thread.Sleep(180000);     // 3 мин = 180000     1 мин = 60000
                     }
                 }
             }
-            Console.Write("ok\n");
+            //Console.Write("ok\n");
             Thread.Sleep(1500);
         }
         //Console.ReadKey(true);
