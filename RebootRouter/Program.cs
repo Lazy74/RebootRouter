@@ -11,50 +11,73 @@ class TcpClientSample
 {
     public static void Main()
     {
+        Thread.Sleep(60000);
 
         var FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LogRebootRouter.txt");        //Путь к файлу
-        
-        string smtpServer = "smtp.yandex.ru";
-        string from = "login@yandex.ru";
-        string password = "pass";
-        string mailto = "to@mail.ru";
-        string caption = "LogReboot";
-        string message = "";
-        string attachFile = "";
+        int N = 0;      //Количество перезагрузок роутера с момента запуска программы
+        bool Flag = false;
+
+        string line = string.Format(">   {0}  Старт программы", DateTime.Now);
 
         if (File.Exists(FilePath))
         {
-            message = "";
-            attachFile = FilePath;
-            SendMail(smtpServer, from, password, mailto, caption, message, attachFile);
-            Thread.Sleep(5000);
-            File.Delete(FilePath);
-        }
-        else
-        {
-            message = String.Format("Log файл не обнаружен.\nПуть поиска: {0}", FilePath);
-            SendMail(smtpServer, from, password, mailto, caption, message);
-        }
-
-
-
-        return;
-        
-
-        int N = 0;      //Количество перезагрузок роутера с момента запуска программы
-
-        string line = string.Format("\n>   {0}  Старт программы", DateTime.Now);
-        try
-        {
+            Flag = true;
             File.AppendAllText(FilePath, Environment.NewLine);
             File.AppendAllText(FilePath, line + Environment.NewLine);
         }
-        catch (Exception)
+        else
         {
-            File.Create(FilePath);
+            Flag = false;
             File.AppendAllText(FilePath, line + Environment.NewLine);
         }
-        bool Flag = false;      // Флаг перезагрузки.
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (MyPing("google.com") == 0)
+            {
+                if (MyPing("ya.ru") == 0)
+                {
+                    if (MyPing("mail.ru") == 0)
+                    {
+                        Reboot();
+                        line = string.Format(">   {0}  Reboot! №{1}", DateTime.Now, N++);
+                        File.AppendAllText(FilePath, line + Environment.NewLine);
+                        Thread.Sleep(180000);     // 3 мин = 180000     1 мин = 60000
+                        continue;
+                    }
+                }
+            }
+            string smtpServer = "smtp.yandex.ru";
+            string from = "login@yandex.ru";
+            string password = "pass";
+            string mailto = "to@mail.ru";
+            string caption = "LogReboot";
+            string message = "";
+            string attachFile = "";
+
+            if (Flag)
+            {
+                message = "";
+                attachFile = FilePath;
+                SendMail(smtpServer, from, password, mailto, caption, message, attachFile);
+                Thread.Sleep(5000);
+                File.Delete(FilePath);
+            }
+            else
+            {
+                message = String.Format("Log файл не обнаружен.\nПуть поиска: {0}", FilePath);
+                SendMail(smtpServer, from, password, mailto, caption, message);
+                Thread.Sleep(5000);
+            }
+            break;
+        }
+        
+
+        line = string.Format(">   {0}  Старт основной части программы программы", DateTime.Now);
+        Console.Write(line);
+        File.AppendAllText(FilePath, line + Environment.NewLine);
+
+        Flag = false;      // Флаг перезагрузки.
         while (true)
         {
             if (Flag)
@@ -189,7 +212,9 @@ class TcpClientSample
         }
         catch (Exception e)
         {
-            throw new Exception("Mail.Send: " + e.Message);
+            var FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LogRebootRouter.txt");        //Путь к файлу
+            string line = string.Format("#   {0}  ERROR  Funtion SendMail Письмо не отправлено! Message: {1}", DateTime.Now, e.Message);
+            File.AppendAllText(FilePath, line + Environment.NewLine);
         }
     }
 
