@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Net;
+using System.Net.Mail;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
@@ -9,8 +11,37 @@ class TcpClientSample
 {
     public static void Main()
     {
-        int N = 0;      //Количество перезагрузок роутера с момента запуска программы
+
         var FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LogRebootRouter.txt");        //Путь к файлу
+        
+        string smtpServer = "smtp.yandex.ru";
+        string from = "login@yandex.ru";
+        string password = "pass";
+        string mailto = "to@mail.ru";
+        string caption = "LogReboot";
+        string message = "";
+        string attachFile = "";
+
+        if (File.Exists(FilePath))
+        {
+            message = "";
+            attachFile = FilePath;
+            SendMail(smtpServer, from, password, mailto, caption, message, attachFile);
+            Thread.Sleep(5000);
+            File.Delete(FilePath);
+        }
+        else
+        {
+            message = String.Format("Log файл не обнаружен.\nПуть поиска: {0}", FilePath);
+            SendMail(smtpServer, from, password, mailto, caption, message);
+        }
+
+
+
+        return;
+        
+
+        int N = 0;      //Количество перезагрузок роутера с момента запуска программы
 
         string line = string.Format("\n>   {0}  Старт программы", DateTime.Now);
         try
@@ -126,4 +157,41 @@ class TcpClientSample
         Thread.Sleep(1000);
     }
 
+    public static void SendMail(string smtpServer, string from, string password, string mailto, string caption, string message, string attachFile = null)
+    // <summary>
+    // Отправка письма на почтовый ящик C# mail send
+    // </summary>
+    // <param name="smtpServer">Имя SMTP-сервера</param>
+    // <param name="from">Адрес отправителя</param>
+    // <param name="password">пароль к почтовому ящику отправителя</param>
+    // <param name="mailto">Адрес получателя</param>
+    // <param name="caption">Тема письма</param>
+    // <param name="message">Сообщение</param>
+    // <param name="attachFile">Присоединенный файл</param>
+    {
+        try
+        {
+            MailMessage mail = new MailMessage();
+            mail.From = new MailAddress(from);
+            mail.To.Add(new MailAddress(mailto));
+            mail.Subject = caption;
+            mail.Body = message;
+            if (!string.IsNullOrEmpty(attachFile))
+                mail.Attachments.Add(new Attachment(attachFile));
+            SmtpClient client = new SmtpClient();
+            client.Host = smtpServer;
+            client.Port = 587;
+            client.EnableSsl = true;
+            client.Credentials = new NetworkCredential(from.Split('@')[0], password);
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.Send(mail);
+            mail.Dispose();
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Mail.Send: " + e.Message);
+        }
+    }
+
 }
+
