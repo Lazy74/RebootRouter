@@ -247,7 +247,7 @@ class TcpClientSample
 
     public static void ConsoleWrite(string text = null)
     {
-        if (text==null)
+        if (text == null)
         {
             Console.ReadKey();
         }
@@ -255,6 +255,7 @@ class TcpClientSample
         {
             Console.Write(text);
         }
+        return;
     }
 
     public static void SendMail(string smtpServer, string from, string password, string mailto, string caption, string message, string attachFile = null)
